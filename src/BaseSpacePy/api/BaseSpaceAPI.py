@@ -85,7 +85,7 @@ class BaseSpaceAPI(BaseAPI):
         :param profile: name of the config file
         :returns: dictionary with credentials from constructor, config file, or default (for optional args), in this priority order.
         '''
-        lcl_cred = self._getLocalCredentials(profile)
+        lcl_cred = None
         my_path = os.path.dirname(os.path.abspath(__file__))
         authenticate_cmd = "bs authenticate"
         if profile != "default":
@@ -94,6 +94,8 @@ class BaseSpaceAPI(BaseAPI):
         # if access tokens have not been provided through the constructor,
         # set a profile name
         if not accessToken:
+            if lcl_cred is None:
+                lcl_cred = self._getLocalCredentials(profile)
             if 'name' in lcl_cred:
                 cred['profile'] = lcl_cred['name']
             else:
@@ -105,6 +107,8 @@ class BaseSpaceAPI(BaseAPI):
             if local_value:
                cred[conf_item] = local_value
             else:
+                if lcl_cred is None:
+                    lcl_cred = self._getLocalCredentials(profile)
                 try:
                     cred[conf_item] = lcl_cred[conf_item]
                 except KeyError:
@@ -117,8 +121,10 @@ class BaseSpaceAPI(BaseAPI):
                 cred[conf_item] = local_value
             else:
                 try:
+                    if lcl_cred is None:
+                        lcl_cred = self._getLocalCredentials(profile)
                     cred[conf_item] = lcl_cred[conf_item]
-                except KeyError:
+                except (KeyError, CredentialsException):
                     cred[conf_item] = local_value
         return cred
 
