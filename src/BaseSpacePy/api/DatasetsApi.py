@@ -13,14 +13,20 @@ from __future__ import absolute_import
 import re  # noqa: F401
 import six
 
-from BaseSpacePy.api.APIClient import APIClient
+from . import APIClient
+from BaseSpacePy.api.BaseAPI import BaseAPI
+from BaseSpacePy.model.V2DatasetCompactList import V2DatasetCompactList
+from BaseSpacePy.model.V2DatasetCompact import V2DatasetCompact
+from BaseSpacePy.model.V2FilesList import V2FilesList
+from BaseSpacePy.model.V1pre3FileCompact import V1pre3FileCompact
 
 
-class DatasetsApi(object):
+class DatasetsApi(BaseAPI):
     def __init__(self, access_token=None, api_server_and_version=None):
         if None in [access_token, api_server_and_version]:
             raise ValueError("AccessToken and api-server-and-version must be specified")
-        self.api_client = APIClient(AccessToken=access_token, apiServerAndVersion=api_server_and_version)
+        self.api_client = APIClient.APIClient(AccessToken=access_token, apiServerAndVersion=api_server_and_version)
+        super(DatasetsApi, self).__init__(access_token, api_server_and_version)
 
     def get_v2_datasets(self, **kwargs):  # noqa: E501
         """Get a list of datasets  # noqa: E501
@@ -104,39 +110,27 @@ class DatasetsApi(object):
             params[key] = val
         del params['kwargs']
 
-        # collection_formats = {}
-        # path_params = {}
-
         query_params = []
         if 'include' in params:
             query_params.append(('include', params['include']))  # noqa: E501
-            # collection_formats['include'] = 'csv'  # noqa: E501
         if 'propertyfilters' in params:
             query_params.append(('propertyfilters', params['propertyfilters']))  # noqa: E501
-            # collection_formats['propertyfilters'] = 'csv'  # noqa: E501
         if 'datasettypes' in params:
             query_params.append(('datasettypes', params['datasettypes']))  # noqa: E501
-            # collection_formats['datasettypes'] = 'csv'  # noqa: E501
         if 'qcstatus' in params:
             query_params.append(('qcstatus', params['qcstatus']))  # noqa: E501
-            # collection_formats['qcstatus'] = 'csv'  # noqa: E501
         if 'uploadstatus' in params:
             query_params.append(('uploadstatus', params['uploadstatus']))  # noqa: E501
-            # collection_formats['uploadstatus'] = 'csv'  # noqa: E501
         if 'inputbiosamples' in params:
             query_params.append(('inputbiosamples', params['inputbiosamples']))  # noqa: E501
-            # collection_formats['inputbiosamples'] = 'csv'  # noqa: E501
         if 'inputruns' in params:
             query_params.append(('inputruns', params['inputruns']))  # noqa: E501
-            # collection_formats['inputruns'] = 'csv'  # noqa: E501
         if 'inputruntokens' in params:
             query_params.append(('inputruntokens', params['inputruntokens']))  # noqa: E501
-            # collection_formats['inputruntokens'] = 'csv'  # noqa: E501
         if 'projectid' in params:
             query_params.append(('projectid', params['projectid']))  # noqa: E501
         if 'appsessionids' in params:
             query_params.append(('appsessionids', params['appsessionids']))  # noqa: E501
-            # collection_formats['appsessionids'] = 'csv'  # noqa: E501
         if 'isarchived' in params:
             query_params.append(('isarchived', params['isarchived']))  # noqa: E501
         if 'sortby' in params:
@@ -148,41 +142,38 @@ class DatasetsApi(object):
         if 'sortdir' in params:
             query_params.append(('sortdir', params['sortdir']))  # noqa: E501
 
-        # form_params = []
-        # local_var_files = {}
-        # body_params = None
-        # # HTTP header `Accept`
-        # header_params['Accept'] = self.api_client.select_header_accept(
-        #     ['application/json'])  # noqa: E501
-        #
-        # # HTTP header `Content-Type`
-        # header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-        #     ['application/json'])  # noqa: E501
-
         header_params = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         resource_path = '/datasets'
         method = 'GET'
-
-        # Authentication setting
-        # auth_settings = ['api_key', 'basespace_auth']  # noqa: E501
-
-        # return self.api_client.call_api(
-        #     '/datasets', 'GET',
-        #     path_params,
-        #     query_params,
-        #     header_params,
-        #     body=body_params,
-        #     post_params=form_params,
-        #     files=local_var_files,
-        #     response_type='V2DatasetCompactList',  # noqa: E501
-        #     auth_settings=auth_settings,
-        #     async_req=params.get('async_req'),
-        #     _return_http_data_only=params.get('_return_http_data_only'),
-        #     _preload_content=params.get('_preload_content', True),
-        #     _request_timeout=params.get('_request_timeout'),
-        #     collection_formats=collection_formats)
-
-        return self.api_client.callAPI(resource_path, method, dict(query_params), None, header_params)
+        datasets_response = self.api_client.callAPI(resource_path, method, dict(query_params), None, header_params)
+        datasets_list = V2DatasetCompactList(datasets_response['Items'], datasets_response['Paging'])
+        datasets_compact_list = []
+        for dataset in datasets_list.items:
+            datasets_compact_list.append(V2DatasetCompact(dataset.get('Id'),
+                                                          dataset.get('Href'),
+                                                          dataset.get('HrefFiles'),
+                                                          dataset.get('HrefBaseSpaceUI'),
+                                                          dataset.get('Name'),
+                                                          dataset.get('DateCreated'),
+                                                          dataset.get('DateModified'),
+                                                          dataset.get('AppSession'),
+                                                          dataset.get('Project'),
+                                                          dataset.get('TotalSize'),
+                                                          dataset.get('IsDeleted'),
+                                                          dataset.get('IsArchived'),
+                                                          dataset.get('IsFileDataDeleted'),
+                                                          dataset.get('UserOwnedBy'),
+                                                          dataset.get('DatasetType'),
+                                                          dataset.get('Properties'),
+                                                          dataset.get('QcStatus'),
+                                                          dataset.get('UploadStatus'),
+                                                          dataset.get('UploadStatusSummary'),
+                                                          dataset.get('ValidationStatus'),
+                                                          dataset.get('V1pre3Id'),
+                                                          dataset.get('HrefComments'),
+                                                          dataset.get('ContainsComments'),
+                                                          dataset.get('OriginDataset')))
+        return datasets_compact_list
 
     # def get_v2_datasets_id(self, id, **kwargs):  # noqa: E501
     #     """Get information about a dataset  # noqa: E501
@@ -532,10 +523,6 @@ class DatasetsApi(object):
 
         collection_formats = {}
 
-        path_params = {}
-        if 'id' in params:
-            path_params['id'] = params['id']  # noqa: E501
-
         query_params = []
         if 'filesetid' in params:
             query_params.append(('filesetid', params['filesetid']))  # noqa: E501
@@ -573,47 +560,26 @@ class DatasetsApi(object):
         if 'sortdir' in params:
             query_params.append(('sortdir', params['sortdir']))  # noqa: E501
 
-        header_params = {}
-
-        form_params = []
-        local_var_files = {}
-
-        body_params = None
-        # # HTTP header `Accept`
-        # header_params['Accept'] = self.api_client.select_header_accept(
-        #     ['application/json'])  # noqa: E501
-        #
-        # # HTTP header `Content-Type`
-        # header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
-        #     ['application/json'])  # noqa: E501
-
-        # AttributeError: 'APIClient' object has no attribute 'select_header_accept'
-        # YF - I comment code above to this:
-        header_params['Accept'] = 'application/json'
-        header_params['Content-Type'] = 'application/json'
-
-        resourcePath = f'/datasets/{id}/files'
+        header_params = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        resource_path = f'/datasets/{id}/files'
         method = 'GET'
-
-        # Authentication setting
-        # auth_settings = ['api_key', 'basespace_auth']  # noqa: E501
-
-        return self.api_client.callAPI(resourcePath, method, dict(query_params), None, header_params)
-        # return self.api_client.call_api(
-        #     '/datasets/{id}/files', 'GET',
-        #     path_params,
-        #     query_params,
-        #     header_params,
-        #     body=body_params,
-        #     post_params=form_params,
-        #     files=local_var_files,
-        #     response_type='V2FilesList',  # noqa: E501
-        #     auth_settings=auth_settings,
-        #     async_req=params.get('async_req'),
-        #     _return_http_data_only=params.get('_return_http_data_only'),
-        #     _preload_content=params.get('_preload_content', True),
-        #     _request_timeout=params.get('_request_timeout'),
-        #     collection_formats=collection_formats)
+        files_response = self.api_client.callAPI(resource_path, method, dict(query_params), None, header_params)
+        files_list = V2FilesList(items=files_response['Items'], paging=files_response['Paging'])
+        files_compact_list = []
+        for file in files_list.items:
+            files_compact_list.append(V1pre3FileCompact(file.get('Id'),
+                                                        file.get('Href'),
+                                                        file.get('HrefContent'),
+                                                        file.get('Name'),
+                                                        file.get('ContentType'),
+                                                        file.get('Size'),
+                                                        file.get('Path'),
+                                                        file.get('IsArchived'),
+                                                        file.get('DateCreated'),
+                                                        file.get('DateModified'),
+                                                        file.get('ETag'),
+                                                        file.get('IdAsLong')))
+        return files_compact_list
 
     # def get_v2_datasettypes_id(self, id, **kwargs):  # noqa: E501
     #     """Get information about a dataset type  # noqa: E501

@@ -2,6 +2,10 @@
 from BaseSpacePy.api.BaseSpaceException import ModelNotInitializedException
 from BaseSpacePy.model.QueryParameters import QueryParameters as qp
 
+from BaseSpacePy.model.V2BiologicalSampleCompactList import V2BiologicalSampleCompactList
+from BaseSpacePy.model.V2BiologicalSampleCompact import V2BiologicalSampleCompact
+
+
 class Project(object):
     '''
     Represents a BaseSpace Project object.
@@ -105,3 +109,41 @@ class Project(object):
         '''
         self.isInit()
         return api.createSample(self.Id, name, experimentName, sampleNumber, sampleTitle, readLengths, countRaw, countPF, reference=reference, appSessionId=appSessionId)
+
+    def get_biosamples(self, biosamples_api, query_params=None):
+        '''
+        Returns a list of BioSample objects.
+
+        :param biosamples_api: An instance of BioSamplesApi
+        :param query_params: An (optional) object of type QueryParameters for custom sorting and filtering
+        :return: list of V2BiologicalSampleCompact objects
+        '''
+        self.isInit()
+        kwargs = {}
+        if query_params:
+            kwargs = {**query_params}
+        kwargs['projectid'] = self.Id
+        biosamples_response = biosamples_api.get_v2_biosamples(**kwargs)
+        bio_samples_list = V2BiologicalSampleCompactList(biosamples_response['Items'], biosamples_response['Paging'])
+        biosample_compact_list = []
+        for biosample in bio_samples_list.items:
+            biosample_compact_list.append(V2BiologicalSampleCompact(biosample.get('Id'),
+                                                 biosample.get('Href'),
+                                                 biosample.get('UserOwnedBy'),
+                                                 biosample.get('BioSampleName'),
+                                                 biosample.get('Nickname'),
+                                                 biosample.get('DefaultProject'),
+                                                 biosample.get('DateModified'),
+                                                 biosample.get('DateCreated'),
+                                                 biosample.get('Subject'),
+                                                 biosample.get('ContainerName'),
+                                                 biosample.get('ContainerPosition'),
+                                                 biosample.get('Status'),
+                                                 biosample.get('LabStatus'),
+                                                 biosample.get('PrepRequests'),
+                                                 biosample.get('LibraryPreps'),
+                                                 biosample.get('Yields'),
+                                                 biosample.get('Properties'),
+                                                 biosample.get('HasQcPassedFastqDatasets')))
+
+        return biosample_compact_list

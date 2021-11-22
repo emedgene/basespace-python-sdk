@@ -1556,3 +1556,18 @@ class BaseSpaceAPI(BaseAPI):
         headerParams = {}
         queryParams = {}
         return self.__singleRequest__(Application.Application, resourcePath, method, queryParams, headerParams)
+
+    def get_biosample_by_id(self, biosample_id, query_params=None):
+        '''
+        Returns a BioSample object
+
+        :param biosample_id: The id of the BioSample
+        :param query_params: An (optional) object of type QueryParameters for custom sorting and filtering
+        :returns: a BioSample instance
+        '''
+        query_params = self._validateQueryParameters(query_params)
+        resource_path = '/biosamples/{id}'
+        method = 'GET'
+        resource_path = resource_path.replace('{id}', biosample_id)
+        header_params = {}
+        return self.__singleRequest__(SampleResponse.SampleResponse, resource_path, method, query_params, header_params)
