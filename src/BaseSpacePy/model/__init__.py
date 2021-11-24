@@ -74,4 +74,10 @@ __all__= [
  'Run',
  'MultipartFileTransfer',
  'KeyValues',
- ]
+ 'V1pre3FileCompact',
+ 'V2FilesList',
+ 'V2BiologicalSampleCompact',
+ 'V2BiologicalSampleCompactList',
+ 'V2DatasetCompact',
+ 'V2DatasetCompactList',
+]
