@@ -25,7 +25,6 @@ class Configuration(object):
     _default = None
 
     def __init__(self):
-        """Constructor"""
         if self._default:
             for key in self._default.__dict__.keys():
                 self.__dict__[key] = copy.copy(self._default.__dict__[key])
@@ -52,9 +51,8 @@ class Configuration(object):
         self.access_token = ""
 
         # Logging Settings
-        self.logger = {}
-        self.logger["package_logger"] = logging.getLogger("swagger_client")
-        self.logger["urllib3_logger"] = logging.getLogger("urllib3")
+        self.logger = {"package_logger": logging.getLogger("swagger_client"),
+                       "urllib3_logger": logging.getLogger("urllib3")}
         # Log format
         self.logger_format = '%(asctime)s %(levelname)s %(message)s'
         # Log stream handler

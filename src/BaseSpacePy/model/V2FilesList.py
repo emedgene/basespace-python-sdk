@@ -116,9 +116,6 @@ class V2FilesList(object):
         :param paging: The paging of this V2FilesList.  # noqa: E501
         :type: V1pre3FilesSortFieldsV2Paging
         """
-        # if self._configuration.client_side_validation and paging is None:
-        #     raise ValueError("Invalid value for `paging`, must not be `None`")  # noqa: E501
-
         self._paging = paging
 
     def to_dict(self):

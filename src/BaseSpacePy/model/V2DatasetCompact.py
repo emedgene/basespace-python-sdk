@@ -252,9 +252,6 @@ class V2DatasetCompact(object):
         :param href_base_space_ui: The href_base_space_ui of this V2DatasetCompact.  # noqa: E501
         :type: str
         """
-        # if self._configuration.client_side_validation and href_base_space_ui is None:
-        #     raise ValueError("Invalid value for `href_base_space_ui`, must not be `None`")  # noqa: E501
-
         self._href_base_space_ui = href_base_space_ui
 
     @property
@@ -637,9 +634,6 @@ class V2DatasetCompact(object):
         :param validation_status: The validation_status of this V2DatasetCompact.  # noqa: E501
         :type: str
         """
-        # if self._configuration.client_side_validation and validation_status is None:
-        #     raise ValueError("Invalid value for `validation_status`, must not be `None`")  # noqa: E501
-
         self._validation_status = validation_status
 
     @property
@@ -706,9 +700,6 @@ class V2DatasetCompact(object):
         :param contains_comments: The contains_comments of this V2DatasetCompact.  # noqa: E501
         :type: bool
         """
-        # if self._configuration.client_side_validation and contains_comments is None:
-        #     raise ValueError("Invalid value for `contains_comments`, must not be `None`")  # noqa: E501
-
         self._contains_comments = contains_comments
 
     @property
@@ -729,9 +720,6 @@ class V2DatasetCompact(object):
         :param origin_dataset: The origin_dataset of this V2DatasetCompact.  # noqa: E501
         :type: V2DatasetCompact
         """
-        # if self._configuration.client_side_validation and origin_dataset is None:
-        #     raise ValueError("Invalid value for `origin_dataset`, must not be `None`")  # noqa: E501
-
         self._origin_dataset = origin_dataset
 
     def to_dict(self):
