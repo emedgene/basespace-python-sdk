@@ -94,25 +94,31 @@ class BaseAPI(object):
         :param queryParams: a dictionary of query parameters
         :param headerParams: a dictionary of header parameters
 
-        :raises ServerResponseException: if server returns an error or has no response        
+        :raises ServerResponseException: if server returns an error or has no response
         :returns: a list of instances of the provided model
         '''
-        if self.verbose: 
-            print ""
-            print "* " + inspect.stack()[1][3] + "  (" + str(method) + ")"  # caller
-            print '    # Path:      ' + str(resourcePath)
-            print '    # QPars:     ' + str(queryParams)
-            print '    # Hdrs:      ' + str(headerParams)
+        if self.verbose:
+            print
+            ""
+            print
+            "* " + inspect.stack()[1][3] + "  (" + str(method) + ")"  # caller
+            print
+            '    # Path:      ' + str(resourcePath)
+            print
+            '    # QPars:     ' + str(queryParams)
+            print
+            '    # Hdrs:      ' + str(headerParams)
         response = self.apiClient.callAPI(resourcePath, method, queryParams, None, headerParams)
         if self.verbose:
-            self.__json_print__('    # Response:  ',response)
-        if not response: 
+            self.__json_print__('    # Response:  ', response)
+        if not response:
             raise ServerResponseException('No response returned')
         if response['ResponseStatus'].has_key('ErrorCode'):
-            raise ServerResponseException(str(response['ResponseStatus']['ErrorCode'] + ": " + response['ResponseStatus']['Message']))
+            raise ServerResponseException(
+                str(response['ResponseStatus']['ErrorCode'] + ": " + response['ResponseStatus']['Message']))
         elif response['ResponseStatus'].has_key('Message'):
             raise ServerResponseException(str(response['ResponseStatus']['Message']))
-        
+
         respObj = self.apiClient.deserialize(response, ListResponse.ListResponse)
         return [self.apiClient.deserialize(c, myModel) for c in respObj._convertToObjectList()]
 
