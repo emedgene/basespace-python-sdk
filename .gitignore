@@ -10,7 +10,7 @@ build
 eggs
 doc_build
 parts
-bin
 var
 sdist
 /scripts
+data/BC-12_S12_L001_R2_001.fastq.gz
