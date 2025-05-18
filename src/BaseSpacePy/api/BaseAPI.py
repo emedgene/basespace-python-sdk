@@ -109,11 +109,13 @@ class BaseAPI(object):
             self.__json_print__('    # Response:  ', response)
         if not response:
             raise ServerResponseException('No response returned')
-        if response['ResponseStatus'].has_key('ErrorCode'):
-            raise ServerResponseException(
-                str(response['ResponseStatus']['ErrorCode'] + ": " + response['ResponseStatus']['Message']))
-        elif response['ResponseStatus'].has_key('Message'):
-            raise ServerResponseException(str(response['ResponseStatus']['Message']))
+        if 'ResponseStatus' in response:
+            if 'ErrorCode' in response['ResponseStatus']:
+                raise ServerResponseException(str(response['ResponseStatus']['ErrorCode'] + ": " + response['ResponseStatus']['Message']))
+            elif 'Message' in response['ResponseStatus']:
+                raise ServerResponseException(str(response['ResponseStatus']['Message']))
+        elif 'ErrorCode' in response:
+            raise ServerResponseException(response["MessageFormatted"])
 
         respObj = self.apiClient.deserialize(response, ListResponse.ListResponse)
         return [self.apiClient.deserialize(c, myModel) for c in respObj._convertToObjectList()]
